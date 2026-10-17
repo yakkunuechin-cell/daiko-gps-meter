@@ -3,18 +3,18 @@
 <head>
 <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
 <meta name="theme-color" content="#101827"/>
-<title>代行 GPS METER v0.7</title>
+<title>代行 GPS METER v0.8</title>
 <style>
 :root{color-scheme:dark;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN",sans-serif;background:#101827;color:#eef5ff}body{margin:0;padding:calc(env(safe-area-inset-top) + 16px) 16px calc(env(safe-area-inset-bottom) + 30px)}main{max-width:530px;margin:auto}h1{font-size:1.3rem;margin:8px 0 18px}h1 span{color:#94a9bc;font-size:.77rem;font-weight:400}section{background:#1b2c40;border-radius:18px;padding:24px 10px;text-align:center}.lbl{color:#b7c8d9;font-size:.88rem}.fare{font-size:clamp(3rem,15vw,5rem);font-weight:800;color:#7deeb0;margin:6px}.dist{font-size:2.4rem;font-weight:700;margin:6px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}button{border:0;border-radius:12px;padding:17px 8px;font-weight:700;font-size:1.04rem;color:white;background:#334963}button:disabled{opacity:.35}.start{background:#137c52}.pause{background:#a97423}.finish{background:#265a9a}.reset{background:#713d4c}.status{padding:12px 4px;line-height:1.6;font-size:.95rem}.hint{color:#a8bacb;font-size:.82rem;line-height:1.7}.warning{margin-top:15px;background:#382e23;color:#f2d8a9;border-radius:12px;padding:11px;font-size:.82rem}.meter-extra{background:#162637;border-radius:12px;padding:12px;margin-top:10px;text-align:center}.meter-extra strong{font-size:1.3rem;color:#f6d88c}.meter-extra .small{font-size:.82rem;color:#b7c8d9}.hist{margin-top:18px;padding:16px;background:#1b2c40;border-radius:15px}.hist h2{font-size:1.1rem;margin:0 0 10px}.entry{border-top:1px solid #415366;padding:12px 0;font-size:.9rem;line-height:1.8}.entry input{width:80px;font-size:1rem;background:#102034;border:1px solid #8594a7;border-radius:6px;color:white;padding:8px}.entry button{padding:9px 12px;font-size:.85rem}.muted{color:#9eb3c7}.good{color:#78e8a9}.bad{color:#ffbc86}pre{white-space:pre-wrap;word-break:break-word;font:inherit}
 </style>
 </head><body><main>
-<h1>🚕 代行 GPS METER <span>Ver.0.7 試作</span></h1>
+<h1>🚕 代行 GPS METER <span>Ver.0.8 試作</span></h1>
 <section><div class="lbl">現在料金（仮計算）</div><div id="fare" class="fare">¥2,000</div><div class="lbl">計測距離</div><div id="distance" class="dist">0.00 km</div></section>
 <div class="meter-extra"><div class="small">次の100円加算まで</div><strong id="next">2.00 km</strong><div class="small" id="range">基本料金区間（2.00kmまで）</div></div>
 <div class="grid"><button class="start" id="start">▶ 開始</button><button class="pause" id="pause" disabled>⏸ 一時停止</button><button class="finish" id="finish" disabled>■ 終了</button><button class="reset" id="reset">↻ リセット</button></div>
 <div class="status">状態：<strong id="state">待機中</strong><br>GPS状態：<strong id="gpsstatus">未測位</strong><br>GPS精度：<strong id="accuracy">未取得</strong><br>GPS記録点：<strong id="points">0</strong><br>計測中の移動候補：<strong id="pending">0 m</strong><br>低精度・異常点：<strong id="rejected">0</strong><br>速度（GPS参考）：<strong id="speed">未取得</strong></div>
 <div class="hist"><h2>📋 走行履歴（直近20件）</h2><div id="history">まだ記録がありません</div><button id="export" type="button">履歴をコピー</button><p class="muted">「終了」で記録。車のトリップは停車中に入力してください。履歴はこの端末内にのみ保存されます。各履歴の削除ボタンから確認後に1件ずつ削除できます。</p></div>
-<p id="saved" class="hint">保存状態：未確認</p><p class="hint">計測記録は端末内に自動保存されます。画面を閉じている間は計測せず、再度開いたら一時停止状態から再開できます。</p><p class="hint">最初に「開始」を押すと位置情報の許可を求めます。許可してください。GPSの精度が悪い測位点（30m超）や、不自然な移動は距離に加算しません。低速走行の短い移動を複数点で判定する試験方式です。停止中に距離が増えないかも確認してください。</p>
+<p id="saved" class="hint">保存状態：未確認</p><p class="hint">計測記録は端末内に自動保存されます。画面を閉じている間は計測せず、再度開いたら一時停止状態から再開できます。</p><p class="hint">最初に「開始」を押すと位置情報の許可を求めます。許可してください。GPSの精度が悪い測位点（30m超）や、不自然な移動は距離に加算しません。停止判定にはGPS速度も利用します。低速走行の短い移動を複数点で判定する試験方式です。停止中に距離が増えないかも確認してください。</p>
 <p class="warning">⚠️ 検証専用。お客様への請求額の決定には使わないでください。iPhoneの画面をロックするとSafariの位置取得が停止する場合があります。料金は2kmまで2,000円、以降400mごとに100円を切り上げ加算する仮仕様です。次回加算距離の表示は参考値であり、料金境界付近ではGPS誤差に注意してください。</p>
 </main><script>
 (()=>{
@@ -73,18 +73,18 @@ function restore(){
  $('saved').textContent='保存状態：復元済み';if(d.mode==='running')save();
  }catch(e){$('saved').textContent='保存状態：読取失敗（リセットで初期化可能）'}
 }
-let anchor=null,rejected=0;
+let anchor=null,rejected=0,motionStreak=0;
 const R=6371000;
 function hav(a,b){const rad=Math.PI/180;const dLat=(b.latitude-a.latitude)*rad,dLon=(b.longitude-a.longitude)*rad;const s=Math.sin(dLat/2)**2+Math.cos(a.latitude*rad)*Math.cos(b.latitude*rad)*Math.sin(dLon/2)**2;return 2*R*Math.asin(Math.min(1,Math.sqrt(s)))}
 function draw(){const fare=2000+Math.max(0,Math.ceil((distance-2000-1e-7)/400))*100;const threshold=distance<2000?2000:2000+(Math.floor((distance-2000)/400)+1)*400; $('next').textContent=Math.max(0,Math.ceil(threshold-distance))+' m';$('range').textContent='次回加算目安：'+(threshold/1000).toFixed(2)+' km';$('fare').textContent='¥'+fare.toLocaleString('ja-JP');$('distance').textContent=(distance/1000).toFixed(2)+' km';$('points').textContent=String(points);$('start').disabled=mode==='running'||mode==='finished';$('pause').disabled=mode!=='running';$('finish').disabled=mode==='idle'||mode==='finished';$('start').textContent=mode==='paused'?'▶ 再開':'▶ 開始'}
 function state(s,cls){$('state').textContent=s;$('state').className=cls||''}
-function stopWatch(){if(watchId!==null){navigator.geolocation.clearWatch(watchId);watchId=null}last=null;anchor=null;$('pending').textContent='0 m'}
+function stopWatch(){if(watchId!==null){navigator.geolocation.clearWatch(watchId);watchId=null}last=null;anchor=null;motionStreak=0;$('pending').textContent='0 m'}
 function onPosition(p){
  if(mode!=='running')return;
  const c=p.coords;const acc=c.accuracy;
  $('accuracy').textContent=Math.round(acc)+' m';$('gpsstatus').textContent=acc>30?'精度不足':'測位中';
  $('speed').textContent=Number.isFinite(c.speed)&&c.speed>=0?(c.speed*3.6).toFixed(1)+' km/h':'未取得';
- if(!Number.isFinite(acc)||acc>30){rejected++;$('rejected').textContent=String(rejected);state('精度が悪いため待機','bad');last=null;anchor=null;$('pending').textContent='0 m';return}
+ if(!Number.isFinite(acc)||acc>30){rejected++;$('rejected').textContent=String(rejected);state('精度が悪いため待機','bad');last=null;anchor=null;motionStreak=0;$('pending').textContent='0 m';return}
  const next={latitude:c.latitude,longitude:c.longitude,time:p.timestamp,accuracy:acc};
  points++;
  if(!anchor){anchor=next;last=next;draw();save();return}
@@ -93,18 +93,26 @@ function onPosition(p){
  if(dt<=0){draw();return}
  if(jump>Math.max(25,dt*45)){
   rejected++;$('rejected').textContent=String(rejected);state('不自然な位置飛びを除外','bad');
-  last=null;anchor=null;$('pending').textContent='0 m';draw();save();return
+  last=null;anchor=null;motionStreak=0;$('pending').textContent='0 m';draw();save();return
  }
  const d=hav(anchor,next),elapsed=(next.time-anchor.time)/1000;
  $('pending').textContent=d.toFixed(1)+' m';
  // Accumulate short movements between accepted anchor fixes, instead of discarding every small GPS step.
  // Stationary GPS jitter is filtered using displacement, elapsed time, reported speed and accuracy.
  const minMove=Math.max(4,Math.min(12,(anchor.accuracy+next.accuracy)*0.55));
- const movingSpeed=Number.isFinite(c.speed)&&c.speed>=0.8;
+ const hasSpeed=Number.isFinite(c.speed)&&c.speed>=0;
+ const movingSpeed=hasSpeed&&c.speed>=0.8;
+ const clearlyStopped=hasSpeed&&c.speed<0.5;
  const plausible=d<=Math.max(25,elapsed*40);
- if(plausible && d>=minMove && (movingSpeed || d/Math.max(elapsed,1)>=0.8)){
-  distance+=d;anchor=next;$('pending').textContent='0 m';state('GPS測位中…');
- }else if(!plausible){rejected++;$('rejected').textContent=String(rejected);anchor=next;$('pending').textContent='0 m';state('移動候補を除外','bad')}
+ // Speed zero plus small GPS drift is not enough to assert real movement.
+ // Require two consecutive plausible moving fixes when speed is unavailable.
+ if(clearlyStopped && d<Math.max(15,acc*2)){
+   motionStreak=0;last=next;$('pending').textContent=d.toFixed(1)+' m';state('停止中のGPS揺れを除外');draw();save();return;
+ }
+ if(plausible&&d>=minMove&&!clearlyStopped)motionStreak++;else motionStreak=0;
+ if(plausible && d>=minMove && (movingSpeed || (!hasSpeed&&motionStreak>=2&&d/Math.max(elapsed,1)>=0.8))){
+  distance+=d;anchor=next;motionStreak=0;$('pending').textContent='0 m';state('GPS測位中…');
+ }else if(!plausible){rejected++;$('rejected').textContent=String(rejected);anchor=next;motionStreak=0;$('pending').textContent='0 m';state('移動候補を除外','bad')}
  last=next;draw();save();
 }
 function onError(e){stopWatch();mode='paused';$('gpsstatus').textContent='エラー';state('GPSエラー：'+e.message,'bad');draw();save()}
