@@ -3,24 +3,53 @@
 <head>
 <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
 <meta name="theme-color" content="#101827"/>
-<title>代行 GPS METER v0.5</title>
+<title>代行 GPS METER v0.6</title>
 <style>
-:root{color-scheme:dark;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN",sans-serif;background:#101827;color:#eef5ff}body{margin:0;padding:calc(env(safe-area-inset-top) + 16px) 16px calc(env(safe-area-inset-bottom) + 30px)}main{max-width:530px;margin:auto}h1{font-size:1.3rem;margin:8px 0 18px}h1 span{color:#94a9bc;font-size:.77rem;font-weight:400}section{background:#1b2c40;border-radius:18px;padding:24px 10px;text-align:center}.lbl{color:#b7c8d9;font-size:.88rem}.fare{font-size:clamp(3rem,15vw,5rem);font-weight:800;color:#7deeb0;margin:6px}.dist{font-size:2.4rem;font-weight:700;margin:6px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}button{border:0;border-radius:12px;padding:17px 8px;font-weight:700;font-size:1.04rem;color:white;background:#334963}button:disabled{opacity:.35}.start{background:#137c52}.pause{background:#a97423}.finish{background:#265a9a}.reset{background:#713d4c}.status{padding:12px 4px;line-height:1.6;font-size:.95rem}.hint{color:#a8bacb;font-size:.82rem;line-height:1.7}.warning{margin-top:15px;background:#382e23;color:#f2d8a9;border-radius:12px;padding:11px;font-size:.82rem}.meter-extra{background:#162637;border-radius:12px;padding:12px;margin-top:10px;text-align:center}.meter-extra strong{font-size:1.3rem;color:#f6d88c}.meter-extra .small{font-size:.82rem;color:#b7c8d9}.good{color:#78e8a9}.bad{color:#ffbc86}pre{white-space:pre-wrap;word-break:break-word;font:inherit}
+:root{color-scheme:dark;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN",sans-serif;background:#101827;color:#eef5ff}body{margin:0;padding:calc(env(safe-area-inset-top) + 16px) 16px calc(env(safe-area-inset-bottom) + 30px)}main{max-width:530px;margin:auto}h1{font-size:1.3rem;margin:8px 0 18px}h1 span{color:#94a9bc;font-size:.77rem;font-weight:400}section{background:#1b2c40;border-radius:18px;padding:24px 10px;text-align:center}.lbl{color:#b7c8d9;font-size:.88rem}.fare{font-size:clamp(3rem,15vw,5rem);font-weight:800;color:#7deeb0;margin:6px}.dist{font-size:2.4rem;font-weight:700;margin:6px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}button{border:0;border-radius:12px;padding:17px 8px;font-weight:700;font-size:1.04rem;color:white;background:#334963}button:disabled{opacity:.35}.start{background:#137c52}.pause{background:#a97423}.finish{background:#265a9a}.reset{background:#713d4c}.status{padding:12px 4px;line-height:1.6;font-size:.95rem}.hint{color:#a8bacb;font-size:.82rem;line-height:1.7}.warning{margin-top:15px;background:#382e23;color:#f2d8a9;border-radius:12px;padding:11px;font-size:.82rem}.meter-extra{background:#162637;border-radius:12px;padding:12px;margin-top:10px;text-align:center}.meter-extra strong{font-size:1.3rem;color:#f6d88c}.meter-extra .small{font-size:.82rem;color:#b7c8d9}.hist{margin-top:18px;padding:16px;background:#1b2c40;border-radius:15px}.hist h2{font-size:1.1rem;margin:0 0 10px}.entry{border-top:1px solid #415366;padding:12px 0;font-size:.9rem;line-height:1.8}.entry input{width:80px;font-size:1rem;background:#102034;border:1px solid #8594a7;border-radius:6px;color:white;padding:8px}.entry button{padding:9px 12px;font-size:.85rem}.muted{color:#9eb3c7}.good{color:#78e8a9}.bad{color:#ffbc86}pre{white-space:pre-wrap;word-break:break-word;font:inherit}
 </style>
 </head><body><main>
-<h1>🚕 代行 GPS METER <span>Ver.0.5 試作</span></h1>
+<h1>🚕 代行 GPS METER <span>Ver.0.6 試作</span></h1>
 <section><div class="lbl">現在料金（仮計算）</div><div id="fare" class="fare">¥2,000</div><div class="lbl">計測距離</div><div id="distance" class="dist">0.00 km</div></section>
 <div class="meter-extra"><div class="small">次の100円加算まで</div><strong id="next">2.00 km</strong><div class="small" id="range">基本料金区間（2.00kmまで）</div></div>
 <div class="grid"><button class="start" id="start">▶ 開始</button><button class="pause" id="pause" disabled>⏸ 一時停止</button><button class="finish" id="finish" disabled>■ 終了</button><button class="reset" id="reset">↻ リセット</button></div>
 <div class="status">状態：<strong id="state">待機中</strong><br>GPS状態：<strong id="gpsstatus">未測位</strong><br>GPS精度：<strong id="accuracy">未取得</strong><br>GPS記録点：<strong id="points">0</strong><br>計測中の移動候補：<strong id="pending">0 m</strong><br>低精度・異常点：<strong id="rejected">0</strong><br>速度（GPS参考）：<strong id="speed">未取得</strong></div>
+<div class="hist"><h2>📋 走行履歴（直近20件）</h2><div id="history">まだ記録がありません</div><button id="export" type="button">履歴をコピー</button><p class="muted">「終了」で記録。車のトリップは停車中に入力してください。履歴はこの端末内にのみ保存されます。</p></div>
 <p id="saved" class="hint">保存状態：未確認</p><p class="hint">計測記録は端末内に自動保存されます。画面を閉じている間は計測せず、再度開いたら一時停止状態から再開できます。</p><p class="hint">最初に「開始」を押すと位置情報の許可を求めます。許可してください。GPSの精度が悪い測位点（30m超）や、不自然な移動は距離に加算しません。低速走行の短い移動を複数点で判定する試験方式です。停止中に距離が増えないかも確認してください。</p>
 <p class="warning">⚠️ 検証専用。お客様への請求額の決定には使わないでください。iPhoneの画面をロックするとSafariの位置取得が停止する場合があります。料金は2kmまで2,000円、以降400mごとに100円を切り上げ加算する仮仕様です。次回加算距離の表示は参考値であり、料金境界付近ではGPS誤差に注意してください。</p>
 </main><script>
 (()=>{
 'use strict';
 const $=id=>document.getElementById(id);
-let distance=0,watchId=null,last=null,points=0,mode='idle';
-const KEY='daiko-gps-meter-v03';
+let distance=0,watchId=null,last=null,points=0,mode='idle',startTime=null;
+const KEY='daiko-gps-meter-v03', HIST_KEY='daiko-gps-meter-history-v06',START_KEY='daiko-gps-meter-start-v06';
+function historyRead(){try{const v=JSON.parse(localStorage.getItem(HIST_KEY)||'[]');return Array.isArray(v)?v:[]}catch(e){return []}}
+function renderHistory(){
+ const el=$('history');el.replaceChildren();
+ const hist=historyRead();
+ if(!hist.length){el.textContent='まだ記録がありません';return}
+ hist.forEach((h,i)=>{
+  const div=document.createElement('div');div.className='entry';
+  const info=document.createElement('div');
+  const st=h.start?new Date(h.start).toLocaleString('ja-JP'):'開始時刻不明';
+  const en=new Date(h.end).toLocaleString('ja-JP');
+  info.textContent=st+' → '+en+' / GPS '+(h.distance/1000).toFixed(2)+'km / 仮料金 '+h.fare.toLocaleString('ja-JP')+'円';
+  const lab=document.createElement('label');lab.textContent='車のトリップ(km)： ';
+  const inp=document.createElement('input');inp.type='number';inp.min='0';inp.step='0.1';inp.placeholder='例 5.3';inp.value=h.trip===null||h.trip===undefined?'':String(h.trip);
+  const diff=document.createElement('div');diff.className='muted';
+  const updateDiff=()=>{diff.textContent=h.trip===null||h.trip===undefined?'比較値未入力':'表示上の差：'+Math.round((h.distance/1000-h.trip)*1000)+'m'};
+  updateDiff();
+  inp.addEventListener('change',()=>{const v=inp.value.trim();h.trip=v===''?null:Number(v);const all=historyRead();const target=all.find(x=>x.id===h.id);if(target){target.trip=h.trip;try{localStorage.setItem(HIST_KEY,JSON.stringify(all))}catch(e){alert('保存に失敗しました')}}updateDiff()});
+  lab.appendChild(inp);div.append(info,lab,diff);el.appendChild(div);
+ })
+}
+function completeHistory(){
+ const fare=2000+Math.max(0,Math.ceil((distance-2000-1e-7)/400))*100;
+ const all=historyRead();all.unshift({id:Date.now(),start:startTime,end:Date.now(),distance,points,fare,trip:null}); 
+ try{localStorage.setItem(HIST_KEY,JSON.stringify(all.slice(0,20)))}catch(e){alert('履歴の保存に失敗しました')}
+ renderHistory()
+}
+$('export').onclick=()=>{const records=historyRead();const t=records.map(h=>[new Date(h.start||h.end).toLocaleString('ja-JP'),new Date(h.end).toLocaleString('ja-JP'),(h.distance/1000).toFixed(2),h.fare,h.trip??''].join(' / ')).join('\n');if(!t)return; if(navigator.clipboard?.writeText){navigator.clipboard.writeText(t).then(()=>alert('履歴をコピーしました')).catch(()=>prompt('履歴をコピーしてください',t))}else prompt('履歴をコピーしてください',t)};
+
 function save(){
  try{localStorage.setItem(KEY,JSON.stringify({distance,points,mode,version:3}));$('saved').textContent='保存状態：保存済み'}
  catch(e){$('saved').textContent='保存状態：保存できません'}
@@ -29,7 +58,7 @@ function restore(){
  try{
  const raw=localStorage.getItem(KEY);if(!raw){$('saved').textContent='保存状態：新規';return}
  const d=JSON.parse(raw);if(d.version!==3||!Number.isFinite(d.distance)||d.distance<0||!Number.isSafeInteger(d.points)||d.points<0||!['idle','paused','running','finished'].includes(d.mode))throw Error('invalid');
- distance=d.distance;points=d.points;mode=d.mode==='running'?'paused':d.mode;
+ distance=d.distance;points=d.points;mode=d.mode==='running'?'paused':d.mode;startTime=Number(localStorage.getItem(START_KEY))||null;
  state(d.mode==='running'?'前回の記録を復元・一時停止':mode==='paused'?'記録を復元・一時停止':mode==='finished'?'終了した記録を復元':'待機中');
  $('saved').textContent='保存状態：復元済み';if(d.mode==='running')save();
  }catch(e){$('saved').textContent='保存状態：読取失敗（リセットで初期化可能）'}
@@ -69,13 +98,13 @@ function onPosition(p){
  last=next;draw();save();
 }
 function onError(e){stopWatch();mode='paused';$('gpsstatus').textContent='エラー';state('GPSエラー：'+e.message,'bad');draw();save()}
-$('start').onclick=()=>{if(!window.isSecureContext){state('HTTPSで開いてください','bad');return}if(!navigator.geolocation){state('GPSに対応していません','bad');return}mode='running';last=null;anchor=null;$('gpsstatus').textContent='取得中';state('GPS測位中…');draw();try{watchId=navigator.geolocation.watchPosition(onPosition,onError,{enableHighAccuracy:true,maximumAge:0,timeout:20000})}catch(e){onError({message:e.message})}save()};
+$('start').onclick=()=>{if(!window.isSecureContext){state('HTTPSで開いてください','bad');return}if(!navigator.geolocation){state('GPSに対応していません','bad');return}if(mode==='idle'||!startTime){startTime=Date.now();try{localStorage.setItem(START_KEY,String(startTime))}catch(e){}}mode='running';last=null;anchor=null;$('gpsstatus').textContent='取得中';state('GPS測位中…');draw();try{watchId=navigator.geolocation.watchPosition(onPosition,onError,{enableHighAccuracy:true,maximumAge:0,timeout:20000})}catch(e){onError({message:e.message})}save()};
 $('pause').onclick=()=>{stopWatch();mode='paused';$('gpsstatus').textContent='停止';state('一時停止');draw();save()};
-$('finish').onclick=()=>{if(!confirm('計測を終了しますか？'))return;stopWatch();mode='finished';$('gpsstatus').textContent='停止';state('計測終了');draw();save()};
-$('reset').onclick=()=>{if(!confirm('距離と料金をリセットしますか？'))return;stopWatch();distance=0;points=0;rejected=0;$('rejected').textContent='0';$('speed').textContent='未取得';mode='idle';$('accuracy').textContent='未取得';$('gpsstatus').textContent='未測位';state('待機中');draw();save()};
+$('finish').onclick=()=>{if(!confirm('計測を終了しますか？'))return;stopWatch();mode='finished';completeHistory();startTime=null;try{localStorage.removeItem(START_KEY)}catch(e){}$('gpsstatus').textContent='停止';state('計測終了');draw();save()};
+$('reset').onclick=()=>{if(!confirm('距離と料金をリセットしますか？'))return;stopWatch();distance=0;points=0;rejected=0;startTime=null;try{localStorage.removeItem(START_KEY)}catch(e){}$('rejected').textContent='0';$('speed').textContent='未取得';mode='idle';$('accuracy').textContent='未取得';$('gpsstatus').textContent='未測位';state('待機中');draw();save()};
 function suspend(){if(mode==='running'){stopWatch();mode='paused';$('gpsstatus').textContent='停止';state('画面が閉じたため計測停止','bad');draw();save()}}
 window.addEventListener('pagehide',suspend);
 document.addEventListener('visibilitychange',()=>{if(document.hidden)suspend()});
-restore();draw();
+restore();draw();renderHistory();
 })();
 </script></body></html>
