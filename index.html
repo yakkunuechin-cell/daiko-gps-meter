@@ -3,28 +3,28 @@
 <head>
 <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
 <meta name="theme-color" content="#101827"/>
-<title>代行 GPS METER v1.0</title>
+<title>代行 GPS METER v1.1</title>
 <style>
 :root{color-scheme:dark;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN",sans-serif;background:#101827;color:#eef5ff}body{margin:0;padding:calc(env(safe-area-inset-top) + 16px) 16px calc(env(safe-area-inset-bottom) + 30px)}main{max-width:530px;margin:auto}h1{font-size:1.3rem;margin:8px 0 18px}h1 span{color:#94a9bc;font-size:.77rem;font-weight:400}section{background:#1b2c40;border-radius:18px;padding:24px 10px;text-align:center}.lbl{color:#b7c8d9;font-size:.88rem}.fare{font-size:clamp(3rem,15vw,5rem);font-weight:800;color:#7deeb0;margin:6px}.dist{font-size:2.4rem;font-weight:700;margin:6px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}button{border:0;border-radius:12px;padding:17px 8px;font-weight:700;font-size:1.04rem;color:white;background:#334963}button:disabled{opacity:.35}.start{background:#137c52}.pause{background:#a97423}.finish{background:#265a9a}.reset{background:#713d4c}.status{padding:12px 4px;line-height:1.6;font-size:.95rem}.hint{color:#a8bacb;font-size:.82rem;line-height:1.7}.warning{margin-top:15px;background:#382e23;color:#f2d8a9;border-radius:12px;padding:11px;font-size:.82rem}.meter-extra{background:#162637;border-radius:12px;padding:12px;margin-top:10px;text-align:center}.meter-extra strong{font-size:1.3rem;color:#f6d88c}.meter-extra .small{font-size:.82rem;color:#b7c8d9}.hist{margin-top:18px;padding:16px;background:#1b2c40;border-radius:15px}.hist h2{font-size:1.1rem;margin:0 0 10px}.entry{border-top:1px solid #415366;padding:12px 0;font-size:.9rem;line-height:1.8}.entry input{width:80px;font-size:1rem;background:#102034;border:1px solid #8594a7;border-radius:6px;color:white;padding:8px}.entry button{padding:9px 12px;font-size:.85rem}.muted{color:#9eb3c7}.fold{margin-top:14px;border-radius:14px;background:#1b2c40;overflow:hidden}.fold summary{cursor:pointer;padding:15px;font-weight:700;list-style:none;touch-action:manipulation}.fold summary::-webkit-details-marker{display:none}.fold summary:after{content:'＋';float:right;color:#9eb3c7}.fold[open] summary:after{content:'−'}.fold .foldbody{padding:0 15px 15px}.fold .hist{margin:0;padding:0;background:transparent}.fold .status{padding:3px 0}.fare{font-variant-numeric:tabular-nums}.dist{font-variant-numeric:tabular-nums}.good{color:#78e8a9}.bad{color:#ffbc86}pre{white-space:pre-wrap;word-break:break-word;font:inherit}
 
-/* Ver.1.0 — horizontal meter layout. No change to GPS calculation/storage. */
+/* Ver.1.1 — responsive 4-card layout; GPS math and storage unchanged. */
 .dashboard{display:flex;flex-direction:column}
 .dashboard .status{order:4}
 .dashboard .grid{order:3}
 .dashboard .meter-extra{order:2}
-.dashboard section{order:1}
+.dashboard section{order:1}.dashboard .distance-panel{order:2}.dashboard .meter-extra{order:3}.dashboard .status{order:4}.dashboard .grid{order:5}
 @media (orientation:landscape) and (min-width:650px){
  body{padding:calc(env(safe-area-inset-top) + 8px) calc(env(safe-area-inset-right) + 14px) calc(env(safe-area-inset-bottom) + 12px) calc(env(safe-area-inset-left) + 14px)}
  main{max-width:1160px}
  h1{margin:0 0 8px;font-size:clamp(1rem,2.5vw,1.35rem)}
- .dashboard{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);grid-template-areas:"meter next" "meter state" "buttons buttons";gap:8px}
- .dashboard section{grid-area:meter;padding:12px 9px;display:flex;flex-direction:column;justify-content:center;min-width:0;border:1px solid #315174}
- .dashboard .fare{font-size:clamp(2.6rem,8vw,5.4rem);line-height:1.08;white-space:nowrap}
- .dashboard .dist{font-size:clamp(1.7rem,5vw,3.1rem);line-height:1.12}
+ .dashboard{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);grid-template-areas:"fare next" "distance state" "buttons buttons";grid-template-rows:minmax(0,1fr) minmax(0,1fr) auto;gap:8px}
+ .dashboard section{padding:10px 9px;display:flex;flex-direction:column;justify-content:center;min-width:0;border:1px solid #315174}.dashboard .fare-panel{grid-area:fare}.dashboard .distance-panel{grid-area:distance;background:#182a40}
+ .dashboard .fare{font-size:clamp(2.6rem,8vw,5.1rem);line-height:1.08;white-space:nowrap}
+ .dashboard .dist{font-size:clamp(2rem,5.5vw,3.7rem);line-height:1.12}
  .dashboard .lbl{font-size:.75rem}
  .dashboard .meter-extra{grid-area:next;margin:0;display:flex;justify-content:center;flex-direction:column;padding:8px}
  .dashboard .meter-extra strong{font-size:clamp(1.5rem,4.5vw,2.5rem)}
- .dashboard .status{grid-area:state;background:#1b2c40;border-radius:12px;padding:8px 12px;display:flex;justify-content:center;flex-direction:column;font-size:clamp(.75rem,1.8vw,1.05rem)!important}
+ .dashboard .status{grid-area:state;background:#1b2c40;border-radius:12px;padding:8px 12px;display:flex;justify-content:center;flex-direction:column;font-size:clamp(.75rem,1.8vw,1.05rem)!important;overflow-wrap:anywhere}
  .dashboard .grid{grid-area:buttons;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));margin:0;gap:8px}
  .dashboard .grid button{min-width:0;padding:12px 4px;font-size:clamp(.72rem,1.9vw,1.04rem)}
  .fold{margin-top:10px}
@@ -40,8 +40,8 @@
 }
 </style>
 </head><body><main>
-<h1>🚕 代行 GPS METER <span>Ver.1.0 横向き対応・試作</span></h1>
-<div class="dashboard"><section><div class="lbl">現在料金（仮計算）</div><div id="fare" class="fare">¥2,000</div><div class="lbl">計測距離</div><div id="distance" class="dist">0.00 km</div></section>
+<h1>🚕 代行 GPS METER <span>Ver.1.1 横向き改良・試作</span></h1>
+<div class="dashboard"><section class="fare-panel"><div class="lbl">現在料金（仮計算）</div><div id="fare" class="fare">¥2,000</div></section><section class="distance-panel"><div class="lbl">計測距離</div><div id="distance" class="dist">0.00 km</div></section>
 <div class="meter-extra"><div class="small">次の100円加算まで</div><strong id="next">2.00 km</strong><div class="small" id="range">基本料金区間（2.00kmまで）</div></div>
 <div class="grid"><button class="start" id="start">▶ 開始</button><button class="pause" id="pause" disabled>⏸ 一時停止</button><button class="finish" id="finish" disabled>■ 終了</button><button class="reset" id="reset">↻ リセット</button></div>
 <div class="status" style="font-size:1.07rem">状態：<strong id="state">待機中</strong><br>GPS状態：<strong id="gpsstatus">未測位</strong></div></div><details class="fold"><summary>GPSの詳しい情報</summary><div class="foldbody"><div class="status">GPS精度：<strong id="accuracy">未取得</strong><br>GPS記録点：<strong id="points">0</strong><br>計測中の移動候補：<strong id="pending">0 m</strong><br>低精度・異常点：<strong id="rejected">0</strong><br>速度（GPS参考）：<strong id="speed">未取得</strong></div></div></details>
