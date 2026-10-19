@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
 <meta name="theme-color" content="#101827"/>
-<title>代行 GPS METER v1.7</title>
+<title>代行 GPS METER v1.8</title>
 <style>
 :root{color-scheme:dark;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN",sans-serif;background:#101827;color:#eef5ff}body{margin:0;padding:calc(env(safe-area-inset-top) + 16px) 16px calc(env(safe-area-inset-bottom) + 30px)}main{max-width:530px;margin:auto}h1{font-size:1.3rem;margin:8px 0 18px}h1 span{color:#94a9bc;font-size:.77rem;font-weight:400}section{background:#1b2c40;border-radius:18px;padding:24px 10px;text-align:center}.lbl{color:#b7c8d9;font-size:.88rem}.fare{font-size:clamp(3rem,15vw,5rem);font-weight:800;color:#7deeb0;margin:6px}.dist{font-size:2.4rem;font-weight:700;margin:6px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}button{border:0;border-radius:12px;padding:17px 8px;font-weight:700;font-size:1.04rem;color:white;background:#334963}button:disabled{opacity:.35}.start{background:#137c52}.pause{background:#a97423}.finish{background:#265a9a}.reset{background:#713d4c}.status{padding:12px 4px;line-height:1.6;font-size:.95rem}.hint{color:#a8bacb;font-size:.82rem;line-height:1.7}.warning{margin-top:15px;background:#382e23;color:#f2d8a9;border-radius:12px;padding:11px;font-size:.82rem}.meter-extra{background:#162637;border-radius:12px;padding:12px;margin-top:10px;text-align:center}.meter-extra strong{font-size:1.3rem;color:#f6d88c}.meter-extra .small{font-size:.82rem;color:#b7c8d9}.hist{margin-top:18px;padding:16px;background:#1b2c40;border-radius:15px}.hist h2{font-size:1.1rem;margin:0 0 10px}.entry{border-top:1px solid #415366;padding:12px 0;font-size:.9rem;line-height:1.8}.entry input{width:80px;font-size:1rem;background:#102034;border:1px solid #8594a7;border-radius:6px;color:white;padding:8px}.entry button{padding:9px 12px;font-size:.85rem}.muted{color:#9eb3c7}.fold{margin-top:14px;border-radius:14px;background:#1b2c40;overflow:hidden}.fold summary{cursor:pointer;padding:15px;font-weight:700;list-style:none;touch-action:manipulation}.fold summary::-webkit-details-marker{display:none}.fold summary:after{content:'＋';float:right;color:#9eb3c7}.fold[open] summary:after{content:'−'}.fold .foldbody{padding:0 15px 15px}.fold .hist{margin:0;padding:0;background:transparent}.fold .status{padding:3px 0}.fare{font-variant-numeric:tabular-nums}.dist{font-variant-numeric:tabular-nums}.good{color:#78e8a9}.bad{color:#ffbc86}pre{white-space:pre-wrap;word-break:break-word;font:inherit}
 
@@ -105,9 +105,19 @@ h1{letter-spacing:.015em;text-shadow:0 2px 12px #0009}
  .dashboard .fare-panel .fare{font-size:clamp(2.6rem,8vw,5.3rem)}
  .dashboard .status{background:linear-gradient(155deg,#0b2540,#0c1b31)}
 }
+
+/* v1.8 right header status; battery placeholder intentionally unavailable on iOS */
+.app-header{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;min-width:0}
+.app-header h1{margin:0;min-width:0}
+.header-right{display:flex;align-items:center;justify-content:flex-end;gap:10px;flex-shrink:0;font-size:.84rem;font-weight:700;font-variant-numeric:tabular-nums}
+.gps-indicator{color:#a7b7cc;white-space:nowrap}.gps-indicator.gps-ok{color:#70e3aa}.gps-indicator.gps-wait{color:#f6cf77}
+.battery-unavailable{color:#91a5bd;font-weight:500;white-space:nowrap}
+.header-menu{padding:5px 10px;border-radius:50%;border:1px solid #295586;background:#102847;color:#bad9fd;min-width:37px;min-height:37px;font-size:1.15rem}
+@media(max-width:650px) and (orientation:portrait){.app-header{align-items:flex-start;flex-direction:column;gap:8px}.header-right{align-self:flex-end}.app-header h1{font-size:1.12rem}}
+@media (orientation:landscape) and (min-width:650px){.app-header h1{font-size:clamp(.85rem,2.2vw,1.2rem)}.header-right{gap:clamp(5px,1.4vw,14px)}}
 </style>
 </head><body><main>
-<h1>🚕 代行 GPS METER <span>Ver.1.7 メーターデザイン・試作</span></h1>
+<header class="app-header"><h1>🚕 代行 GPS METER <span>Ver.1.8 ヘッダー改良・試作</span></h1><div class="header-right"><span id="header-gps" class="gps-indicator" aria-label="GPS受信状態">◇ GPS未測位</span><time id="header-clock" aria-label="現在時刻">--:--</time><span class="battery-unavailable" title="iPhoneのWebブラウザでは電池残量を取得できません">▱ --</span><button type="button" id="header-menu" class="header-menu" aria-label="GPS詳細・履歴を開く">☰</button></div></header>
 <div class="dashboard"><section class="fare-panel"><div class="lbl">現在料金（仮計算）</div><div id="fare" class="fare">¥2,000</div></section><section class="distance-panel"><div class="lbl">計測距離</div><div id="distance" class="dist">0.00 km</div></section>
 <div class="meter-extra"><div class="small">次の100円加算まで</div><strong id="next">2000 m</strong><div class="progress-track" aria-hidden="true"><div class="progress-fill" id="progress"></div></div><div class="small" id="range">次回加算目安：2.00 km</div></div>
 <div class="grid"><button class="start" id="start">▶ 開始</button><button class="pause" id="pause" disabled>⏸ 一時停止</button><button class="finish" id="finish" disabled>■ 終了</button><button class="reset" id="reset">↻ リセット</button></div>
@@ -181,8 +191,9 @@ function restore(){
 let anchor=null,rejected=0,motionStreak=0;
 const R=6371000;
 function hav(a,b){const rad=Math.PI/180;const dLat=(b.latitude-a.latitude)*rad,dLon=(b.longitude-a.longitude)*rad;const s=Math.sin(dLat/2)**2+Math.cos(a.latitude*rad)*Math.cos(b.latitude*rad)*Math.sin(dLon/2)**2;return 2*R*Math.asin(Math.min(1,Math.sqrt(s)))}
-function draw(){const fare=2000+Math.max(0,Math.ceil((distance-2000-1e-7)/400))*100;const threshold=distance<2000?2000:2000+(Math.floor((distance-2000)/400)+1)*400; $('next').textContent=Math.max(0,Math.ceil(threshold-distance))+' m';const base=distance<2000?0:threshold-400;const width=Math.max(0,Math.min(100,(distance-base)/(threshold-base)*100));$('progress').style.width=width+'%';$('progress').style.background=width>=80?'linear-gradient(90deg,#e8ae37,#f4d06a)':'linear-gradient(90deg,#137ad9,#37a5ff)';$('range').textContent='次回加算目安：'+(threshold/1000).toFixed(2)+' km';$('fare').textContent='¥'+fare.toLocaleString('ja-JP');$('distance').textContent=(distance/1000).toFixed(2)+' km';$('points').textContent=String(points);$('start').disabled=mode==='running'||mode==='finished';$('pause').disabled=mode!=='running';$('finish').disabled=mode==='idle'||mode==='finished';$('start').textContent=mode==='paused'?'▶ 再開':'▶ 開始'}
-function state(s,cls){$('state').textContent=s;$('state').className=cls||'';const isWarning=cls==='bad'||/エラー|精度が悪い|画面が閉じた|不自然/.test(s);const isRunning=mode==='running'&&!isWarning;const isPaused=mode==='paused';$('state').classList.toggle('state-running',isRunning);$('state').classList.toggle('state-paused',isPaused);$('state').classList.toggle('state-warning',isWarning)}
+function draw(){refreshHeader();const fare=2000+Math.max(0,Math.ceil((distance-2000-1e-7)/400))*100;const threshold=distance<2000?2000:2000+(Math.floor((distance-2000)/400)+1)*400; $('next').textContent=Math.max(0,Math.ceil(threshold-distance))+' m';const base=distance<2000?0:threshold-400;const width=Math.max(0,Math.min(100,(distance-base)/(threshold-base)*100));$('progress').style.width=width+'%';$('progress').style.background=width>=80?'linear-gradient(90deg,#e8ae37,#f4d06a)':'linear-gradient(90deg,#137ad9,#37a5ff)';$('range').textContent='次回加算目安：'+(threshold/1000).toFixed(2)+' km';$('fare').textContent='¥'+fare.toLocaleString('ja-JP');$('distance').textContent=(distance/1000).toFixed(2)+' km';$('points').textContent=String(points);$('start').disabled=mode==='running'||mode==='finished';$('pause').disabled=mode!=='running';$('finish').disabled=mode==='idle'||mode==='finished';$('start').textContent=mode==='paused'?'▶ 再開':'▶ 開始'}
+function refreshHeader(){const status=$('gpsstatus').textContent;const el=$('header-gps');const receiving=mode==='running'&&status==='測位中';const waiting=mode==='running'&&!receiving;el.textContent=receiving?'◆ GPS受信中':waiting?'◇ GPS確認中':mode==='paused'?'◇ GPS停止':'◇ GPS未測位';el.className='gps-indicator '+(receiving?'gps-ok':waiting?'gps-wait':'gps-off');}
+function state(s,cls){$('state').textContent=s;refreshHeader();$('state').className=cls||'';const isWarning=cls==='bad'||/エラー|精度が悪い|画面が閉じた|不自然/.test(s);const isRunning=mode==='running'&&!isWarning;const isPaused=mode==='paused';$('state').classList.toggle('state-running',isRunning);$('state').classList.toggle('state-paused',isPaused);$('state').classList.toggle('state-warning',isWarning)}
 function stopWatch(){if(watchId!==null){navigator.geolocation.clearWatch(watchId);watchId=null}last=null;anchor=null;lastFixAt=null;$('lastfix').textContent='受信停止';motionStreak=0;$('pending').textContent='0 m'}
 function onPosition(p){
  if(mode!=='running')return;
@@ -231,6 +242,9 @@ setInterval(()=>{if(mode!=='running'||document.hidden||lastFixAt===null)return;c
 function suspend(){if(mode==='running'){stopWatch();mode='paused';$('gpsstatus').textContent='停止';state('画面が閉じたため計測停止','bad');draw();save()}}
 window.addEventListener('pagehide',suspend);
 document.addEventListener('visibilitychange',()=>{if(document.hidden)suspend()});
+function clockTick(){const d=new Date();$('header-clock').textContent=d.toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit',hour12:false});}
+clockTick();setInterval(clockTick,15000);
+$('header-menu').onclick=()=>{const detail=document.querySelector('details.fold');if(detail){detail.open=!detail.open;if(detail.open)detail.scrollIntoView({behavior:'smooth',block:'nearest'});}};
 restore();draw();renderHistory();
 })();
 </script></body></html>
