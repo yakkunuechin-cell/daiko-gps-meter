@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
 <meta name="theme-color" content="#101827"/>
-<title>代行 GPS METER v1.6</title>
+<title>代行 GPS METER v1.7</title>
 <style>
 :root{color-scheme:dark;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN",sans-serif;background:#101827;color:#eef5ff}body{margin:0;padding:calc(env(safe-area-inset-top) + 16px) 16px calc(env(safe-area-inset-bottom) + 30px)}main{max-width:530px;margin:auto}h1{font-size:1.3rem;margin:8px 0 18px}h1 span{color:#94a9bc;font-size:.77rem;font-weight:400}section{background:#1b2c40;border-radius:18px;padding:24px 10px;text-align:center}.lbl{color:#b7c8d9;font-size:.88rem}.fare{font-size:clamp(3rem,15vw,5rem);font-weight:800;color:#7deeb0;margin:6px}.dist{font-size:2.4rem;font-weight:700;margin:6px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}button{border:0;border-radius:12px;padding:17px 8px;font-weight:700;font-size:1.04rem;color:white;background:#334963}button:disabled{opacity:.35}.start{background:#137c52}.pause{background:#a97423}.finish{background:#265a9a}.reset{background:#713d4c}.status{padding:12px 4px;line-height:1.6;font-size:.95rem}.hint{color:#a8bacb;font-size:.82rem;line-height:1.7}.warning{margin-top:15px;background:#382e23;color:#f2d8a9;border-radius:12px;padding:11px;font-size:.82rem}.meter-extra{background:#162637;border-radius:12px;padding:12px;margin-top:10px;text-align:center}.meter-extra strong{font-size:1.3rem;color:#f6d88c}.meter-extra .small{font-size:.82rem;color:#b7c8d9}.hist{margin-top:18px;padding:16px;background:#1b2c40;border-radius:15px}.hist h2{font-size:1.1rem;margin:0 0 10px}.entry{border-top:1px solid #415366;padding:12px 0;font-size:.9rem;line-height:1.8}.entry input{width:80px;font-size:1rem;background:#102034;border:1px solid #8594a7;border-radius:6px;color:white;padding:8px}.entry button{padding:9px 12px;font-size:.85rem}.muted{color:#9eb3c7}.fold{margin-top:14px;border-radius:14px;background:#1b2c40;overflow:hidden}.fold summary{cursor:pointer;padding:15px;font-weight:700;list-style:none;touch-action:manipulation}.fold summary::-webkit-details-marker{display:none}.fold summary:after{content:'＋';float:right;color:#9eb3c7}.fold[open] summary:after{content:'−'}.fold .foldbody{padding:0 15px 15px}.fold .hist{margin:0;padding:0;background:transparent}.fold .status{padding:3px 0}.fare{font-variant-numeric:tabular-nums}.dist{font-variant-numeric:tabular-nums}.good{color:#78e8a9}.bad{color:#ffbc86}pre{white-space:pre-wrap;word-break:break-word;font:inherit}
 
@@ -77,9 +77,37 @@
  .status-item strong{font-size:clamp(.76rem,1.7vw,1.04rem)}
  .status-item span{font-size:clamp(.65rem,1.25vw,.78rem)}
 }
-.state-running{color:#7deeb0}.state-paused{color:#f5d487}.state-warning{color:#ffad91}.progress-track{height:10px;box-shadow:inset 0 1px 3px #0008}.progress-fill{transition:width .3s ease,background .2s ease}.status-item strong{font-variant-numeric:tabular-nums}@media (prefers-reduced-motion:reduce){.progress-fill{transition:none}}</style>
+.state-running{color:#7deeb0}.state-paused{color:#f5d487}.state-warning{color:#ffad91}.progress-track{height:10px;box-shadow:inset 0 1px 3px #0008}.progress-fill{transition:width .3s ease,background .2s ease}.status-item strong{font-variant-numeric:tabular-nums}@media (prefers-reduced-motion:reduce){.progress-fill{transition:none}}
+/* Ver.1.7 — visual only: in-browser meter styling, no generated images */
+body{background:radial-gradient(ellipse at 48% -15%,#163358 0%,#0c1728 48%,#080f1d 100%)}
+h1{letter-spacing:.015em;text-shadow:0 2px 12px #0009}
+.dashboard section,.dashboard .meter-extra,.dashboard .status{
+ position:relative;overflow:hidden;
+ background:linear-gradient(155deg,#102943 0%,#0d1c32 60%,#0b203a 100%);
+ border:1px solid #275485;
+ box-shadow:inset 0 1px 0 #82aadd22,inset 0 -8px 24px #0002,0 4px 12px #0003;
+}
+.dashboard section::before,.dashboard .meter-extra::before,.dashboard .status::before{
+ content:"";position:absolute;inset:0;pointer-events:none;
+ background:linear-gradient(125deg,#ffffff0b,transparent 40%,#2a65a310);
+}
+.dashboard .fare-panel .lbl::before{content:"¥";display:inline-grid;place-items:center;width:1.45em;height:1.45em;margin-right:9px;border-radius:50%;background:linear-gradient(#8bb9ff,#3b72af);color:#0e2545;font-weight:900}
+.dashboard .distance-panel .lbl::before{content:"⌖";display:inline-block;margin-right:9px;color:#8cbcff;font-size:1.4em;vertical-align:middle}
+.dashboard .meter-extra .small:first-child::before{content:"▰";display:inline-block;margin-right:8px;color:#7aaeff}
+.dashboard .fare{letter-spacing:-.045em;text-shadow:0 0 14px #e3f5ff30,0 2px 3px #0008}
+.dashboard .dist{text-shadow:0 0 12px #e3f5ff20}
+.dashboard .meter-extra strong{letter-spacing:-.03em;text-shadow:0 0 10px #accdff24}
+.progress-track{background:#071323;border-color:#2869ac;box-shadow:inset 0 2px 6px #000a,0 0 7px #1671d144}
+.progress-fill{background:linear-gradient(90deg,#0968c9,#169bff)!important;box-shadow:0 0 12px #159affaa}
+.dashboard .grid button{box-shadow:inset 0 1px 0 #ffffff4a,inset 0 -6px 10px #0003,0 3px 5px #0004;text-shadow:0 1px 2px #0007;border:1px solid #ffffff30}
+.dashboard .grid button:disabled{box-shadow:inset 0 1px 0 #ffffff12;filter:saturate(.6)}
+@media(orientation:landscape) and (min-width:650px){
+ .dashboard .fare-panel .fare{font-size:clamp(2.6rem,8vw,5.3rem)}
+ .dashboard .status{background:linear-gradient(155deg,#0b2540,#0c1b31)}
+}
+</style>
 </head><body><main>
-<h1>🚕 代行 GPS METER <span>Ver.1.6 GPS停止表示修正・試作</span></h1>
+<h1>🚕 代行 GPS METER <span>Ver.1.7 メーターデザイン・試作</span></h1>
 <div class="dashboard"><section class="fare-panel"><div class="lbl">現在料金（仮計算）</div><div id="fare" class="fare">¥2,000</div></section><section class="distance-panel"><div class="lbl">計測距離</div><div id="distance" class="dist">0.00 km</div></section>
 <div class="meter-extra"><div class="small">次の100円加算まで</div><strong id="next">2000 m</strong><div class="progress-track" aria-hidden="true"><div class="progress-fill" id="progress"></div></div><div class="small" id="range">次回加算目安：2.00 km</div></div>
 <div class="grid"><button class="start" id="start">▶ 開始</button><button class="pause" id="pause" disabled>⏸ 一時停止</button><button class="finish" id="finish" disabled>■ 終了</button><button class="reset" id="reset">↻ リセット</button></div>
