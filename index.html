@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
 <meta name="theme-color" content="#101827"/>
-<title>代行 GPS METER v2.1</title>
+<title>代行 GPS METER v2.2</title>
 <style>
 :root{color-scheme:dark;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN",sans-serif;background:#101827;color:#eef5ff}body{margin:0;padding:calc(env(safe-area-inset-top) + 16px) 16px calc(env(safe-area-inset-bottom) + 30px)}main{max-width:530px;margin:auto}h1{font-size:1.3rem;margin:8px 0 18px}h1 span{color:#94a9bc;font-size:.77rem;font-weight:400}section{background:#1b2c40;border-radius:18px;padding:24px 10px;text-align:center}.lbl{color:#b7c8d9;font-size:.88rem}.fare{font-size:clamp(3rem,15vw,5rem);font-weight:800;color:#7deeb0;margin:6px}.dist{font-size:2.4rem;font-weight:700;margin:6px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}button{border:0;border-radius:12px;padding:17px 8px;font-weight:700;font-size:1.04rem;color:white;background:#334963}button:disabled{opacity:.35}.start{background:#137c52}.pause{background:#a97423}.finish{background:#265a9a}.reset{background:#713d4c}.status{padding:12px 4px;line-height:1.6;font-size:.95rem}.hint{color:#a8bacb;font-size:.82rem;line-height:1.7}.warning{margin-top:15px;background:#382e23;color:#f2d8a9;border-radius:12px;padding:11px;font-size:.82rem}.meter-extra{background:#162637;border-radius:12px;padding:12px;margin-top:10px;text-align:center}.meter-extra strong{font-size:1.3rem;color:#f6d88c}.meter-extra .small{font-size:.82rem;color:#b7c8d9}.hist{margin-top:18px;padding:16px;background:#1b2c40;border-radius:15px}.hist h2{font-size:1.1rem;margin:0 0 10px}.entry{border-top:1px solid #415366;padding:12px 0;font-size:.9rem;line-height:1.8}.entry input{width:80px;font-size:1rem;background:#102034;border:1px solid #8594a7;border-radius:6px;color:white;padding:8px}.entry button{padding:9px 12px;font-size:.85rem}.muted{color:#9eb3c7}.fold{margin-top:14px;border-radius:14px;background:#1b2c40;overflow:hidden}.fold summary{cursor:pointer;padding:15px;font-weight:700;list-style:none;touch-action:manipulation}.fold summary::-webkit-details-marker{display:none}.fold summary:after{content:'＋';float:right;color:#9eb3c7}.fold[open] summary:after{content:'−'}.fold .foldbody{padding:0 15px 15px}.fold .hist{margin:0;padding:0;background:transparent}.fold .status{padding:3px 0}.fare{font-variant-numeric:tabular-nums}.dist{font-variant-numeric:tabular-nums}.good{color:#78e8a9}.bad{color:#ffbc86}pre{white-space:pre-wrap;word-break:break-word;font:inherit}
 
@@ -137,7 +137,7 @@ button,summary{-webkit-tap-highlight-color:transparent}
 }
 </style>
 </head><body><div id="pull-refresh" role="status" aria-live="polite">↓ 下に引いて更新</div><main>
-<header class="app-header"><h1>🚕 代行 GPS METER <span>Ver.2.1 操作性改良・試作</span></h1><div class="header-right"><span id="header-gps" class="gps-indicator" aria-label="GPS受信状態">◇ GPS未測位</span><time id="header-clock" aria-label="現在時刻">--:--</time><button type="button" id="header-menu" class="header-menu" aria-label="GPS詳細・履歴を開く">☰</button></div></header><nav id="quick-menu" class="quick-menu" hidden aria-label="メーターのメニュー"><button id="menu-gps" type="button">GPSの詳しい情報</button><button id="menu-history" type="button">走行履歴</button><span>電池残量はiPhoneのステータスバーで確認してください</span></nav>
+<header class="app-header"><h1>🚕 代行 GPS METER <span>Ver.2.2 スリープ復元・試作</span></h1><div class="header-right"><span id="header-gps" class="gps-indicator" aria-label="GPS受信状態">◇ GPS未測位</span><time id="header-clock" aria-label="現在時刻">--:--</time><button type="button" id="header-menu" class="header-menu" aria-label="GPS詳細・履歴を開く">☰</button></div></header><nav id="quick-menu" class="quick-menu" hidden aria-label="メーターのメニュー"><button id="menu-gps" type="button">GPSの詳しい情報</button><button id="menu-history" type="button">走行履歴</button><span>電池残量はiPhoneのステータスバーで確認してください</span></nav>
 <div class="dashboard"><section class="fare-panel"><div class="lbl">現在料金（仮計算）</div><div id="fare" class="fare">¥2,000</div></section><section class="distance-panel"><div class="lbl">計測距離</div><div id="distance" class="dist">0.00 km</div></section>
 <div class="meter-extra"><div class="small">次の100円加算まで</div><strong id="next">2000 m</strong><div class="progress-track" aria-hidden="true"><div class="progress-fill" id="progress"></div></div><div class="small" id="range">次回加算目安：2.00 km</div></div>
 <div class="grid"><button class="start" id="start">▶ 開始</button><button class="pause" id="pause" disabled>⏸ 一時停止</button><button class="finish" id="finish" disabled>■ 終了</button><button class="reset" id="reset">↻ リセット</button></div>
@@ -253,15 +253,36 @@ function onPosition(p){
  last=next;draw();save();
 }
 function onError(e){stopWatch();mode='paused';$('lastfix').textContent='受信停止';$('gpsstatus').textContent='エラー';state('GPSエラー：'+e.message,'bad');draw();save()}
-$('start').onclick=()=>{if(!window.isSecureContext){state('HTTPSで開いてください','bad');return}if(!navigator.geolocation){state('GPSに対応していません','bad');return}if(mode==='idle'||!startTime){startTime=Date.now();try{localStorage.setItem(START_KEY,String(startTime))}catch(e){}}mode='running';last=null;anchor=null;lastFixAt=Date.now();$('lastfix').textContent='取得待ち';$('gpsstatus').textContent='取得中';state('GPS測位中…');draw();try{watchId=navigator.geolocation.watchPosition(onPosition,onError,{enableHighAccuracy:true,maximumAge:0,timeout:20000})}catch(e){onError({message:e.message})}save()};
+$('start').onclick=()=>{if(!window.isSecureContext){state('HTTPSで開いてください','bad');return}if(!navigator.geolocation){state('GPSに対応していません','bad');return}if(mode==='idle'||!startTime){startTime=Date.now();try{localStorage.setItem(START_KEY,String(startTime))}catch(e){}}mode='running';try{localStorage.removeItem(SLEEP_KEY)}catch(e){}last=null;anchor=null;lastFixAt=Date.now();$('lastfix').textContent='取得待ち';$('gpsstatus').textContent='取得中';state('GPS測位中…');draw();try{watchId=navigator.geolocation.watchPosition(onPosition,onError,{enableHighAccuracy:true,maximumAge:0,timeout:20000})}catch(e){onError({message:e.message})}save()};
 $('pause').onclick=()=>{stopWatch();mode='paused';$('gpsstatus').textContent='停止';state('一時停止');draw();save()};
 $('finish').onclick=()=>{if(!confirm('計測を終了しますか？'))return;stopWatch();mode='finished';completeHistory();startTime=null;try{localStorage.removeItem(START_KEY)}catch(e){}$('gpsstatus').textContent='停止';state('計測終了');draw();save()};
 $('reset').onclick=()=>{if(!confirm('距離と料金をリセットしますか？'))return;stopWatch();distance=0;points=0;rejected=0;startTime=null;try{localStorage.removeItem(START_KEY)}catch(e){}$('rejected').textContent='0';$('speed').textContent='未取得';mode='idle';$('lastfix').textContent='未取得';$('accuracy').textContent='未取得';$('gpsstatus').textContent='未測位';state('待機中');draw();save()};
 // Inform the driver if GPS fixes become stale; do not change distance calculation.
 setInterval(()=>{if(mode!=='running'||document.hidden||lastFixAt===null)return;const seconds=Math.floor((Date.now()-lastFixAt)/1000);$('lastfix').textContent=seconds+'秒前';if(seconds>=30){$('gpsstatus').textContent='受信遅延';state('GPS受信待ち（距離に注意）','bad')}},5000);
-function suspend(){if(mode==='running'){stopWatch();mode='paused';$('gpsstatus').textContent='停止';state('画面が閉じたため計測停止','bad');draw();save()}}
+// Browsers cannot guarantee background GPS tracking on iPhone.
+// Save before the screen locks; clearly mark the missing GPS interval and resume manually.
+const SLEEP_KEY='daiko-gps-meter-sleep-interrupted-v22';
+function markSleep(){try{localStorage.setItem(SLEEP_KEY,String(Date.now()))}catch(e){}}
+function suspend(){
+ if(mode==='running'){
+   markSleep();stopWatch();mode='paused';
+   $('gpsstatus').textContent='停止';
+   state('スリープで一時停止・距離は保存済み（再開を押してください）','bad');
+   draw();save();
+ }
+}
+function sleepNotice(){
+ let interrupted=false;
+ try{interrupted=!!localStorage.getItem(SLEEP_KEY)}catch(e){}
+ if(interrupted&&mode==='paused'){
+   state('スリープ中は未計測・距離は保持（▶ 再開を押してください）','bad');
+   $('gpsstatus').textContent='停止';
+   draw();
+ }
+}
 window.addEventListener('pagehide',suspend);
-document.addEventListener('visibilitychange',()=>{if(document.hidden)suspend()});
+document.addEventListener('visibilitychange',()=>{if(document.hidden)suspend();else sleepNotice()});
+window.addEventListener('pageshow',sleepNotice);
 function openPanel(kind){const details=[...document.querySelectorAll('details.fold')];const target=kind==='history'?details.find(d=>d.querySelector('summary')?.textContent.includes('走行履歴')):details.find(d=>d.querySelector('summary')?.textContent.includes('GPS'));if(!target)return;target.open=true;target.scrollIntoView({behavior:'smooth',block:'start'});}
 function clockTick(){const d=new Date();$('header-clock').textContent=d.toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit',hour12:false});}
 clockTick();setInterval(clockTick,15000);
@@ -298,6 +319,6 @@ document.addEventListener('touchend',()=>{
  window.location.replace(fresh.toString());
 },{passive:true});
 document.addEventListener('touchcancel',()=>{pullStart=null;pullReady=false;pullShow('',false)},{passive:true});
-restore();draw();renderHistory();
+restore();draw();renderHistory();sleepNotice();
 })();
 </script></body></html>
